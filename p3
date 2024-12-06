@@ -1,0 +1,122 @@
+import datetime
+
+class LibraryItem:
+    def __init__(self, title, author, category):
+        self.title = title
+        self.author = author
+        self.category = category
+        self.available = True
+        self.due_date = None
+        self.checked_out_by = None
+
+    def __str__(self):
+        return f"Title: {self.title}, Author: {self.author}, Category: {self.category}, Available: {self.available}"
+
+class Book(LibraryItem):
+    def __init__(self, title, author, category, isbn):
+        super().__init__(title, author, category)
+        self.isbn = isbn
+
+    def __str__(self):
+        return f"{super().__str__()}, ISBN: {self.isbn}"
+
+class Magazine(LibraryItem):
+    def __init__(self, title, author, category, issue_number):
+        super().__init__(title, author, category)
+        self.issue_number = issue_number
+
+    def __str__(self):
+        return f"{super().__str__()}, Issue: {self.issue_number}"
+
+class DVD(LibraryItem):
+    def __init__(self, title, author, category, dvd_code):
+        super().__init__(title, author, category)
+        self.dvd_code = dvd_code
+
+    def __str__(self):
+        return f"{super().__str__()}, DVD Code: {self.dvd_code}"
+
+class Library:
+    def __init__(self):
+        self.items = []
+        self.users = {}  # Keyed by user ID
+        self.fine_rate = 1.0  # Fine per day for overdue items
+
+    def add_item(self, item):
+        self.items.append(item)
+
+    def search_items(self, title=None, author=None, category=None):
+        results = []
+        for item in self.items:
+            if ((title is None or title.lower() in item.title.lower()) and
+                (author is None or author.lower() in item.author.lower()) and
+                (category is None or category.lower() in item.category.lower())):
+                results.append(item)
+        return results
+
+    def checkout_item(self, item, user_id):
+        if item.available:
+            item.available = False
+            item.due_date = datetime.datetime.now() + datetime.timedelta(days=14)  # 2 weeks loan
+            item.checked_out_by = user_id
+            if user_id not in self.users:
+                self.users[user_id] = 0  # Initialize fine balance for new user
+            print(f"Item '{item.title}' checked out successfully.")
+        else:
+            print(f"Item '{item.title}' is not available for checkout.")
+
+    def return_item(self, item, user_id):
+        if not item.available and item.checked_out_by == user_id:
+            item.available = True
+            overdue_days = (datetime.datetime.now() - item.due_date).days
+            overdue_fine = max(0, overdue_days) * self.fine_rate
+            self.users[user_id] += overdue_fine
+            print(f"Item '{item.title}' returned successfully. Overdue fine: ${overdue_fine:.2f}.")
+        else:
+            print(f"Item '{item.title}' is not checked out by you or is already returned.")
+
+    def pay_fine(self, user_id, amount):
+        if user_id in self.users:
+            self.users[user_id] = max(0, self.users[user_id] - amount)
+            print(f"Fine payment of ${amount:.2f} processed. Remaining fine: ${self.users[user_id]:.2f}.")
+        else:
+            print("User not found.")
+
+    def show_fines(self, user_id):
+        if user_id in self.users:
+            print(f"User {user_id} has a fine of ${self.users[user_id]:.2f}.")
+        else:
+            print("User not found.")
+
+# Example usage
+if __name__ == "__main__":
+    library = Library()
+
+    # Adding items
+    book1 = Book("Python Programming", "John Doe", "Programming", "123-456-789")
+    magazine1 = Magazine("Tech Trends", "Jane Smith", "Technology", 101)
+    dvd1 = DVD("Inception", "Christopher Nolan", "Movies", "DVD1234")
+
+    library.add_item(book1)
+    library.add_item(magazine1)
+    library.add_item(dvd1)
+
+    # Searching for items
+    print("Searching for books with 'Python' in the title:")
+    search_results = library.search_items(title="Python")
+    for item in search_results:
+        print(item)
+
+    # Checkout item
+    library.checkout_item(book1, user_id=1)
+
+    # Trying to checkout an already checked out item
+    library.checkout_item(book1, user_id=2)
+
+    # Return item
+    library.return_item(book1, user_id=1)
+
+    # Show and pay fines
+    library.show_fines(user_id=1)
+    library.pay_fine(user_id=1, amount=5)
+    library.show_fines(user_id=1)
