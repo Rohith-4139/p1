@@ -1,0 +1,118 @@
+import math
+
+# Functions for basic operations
+def add(x, y):
+    return x + y
+
+def subtract(x, y):
+    return x - y
+
+def multiply(x, y):
+    return x * y
+
+def divide(x, y):
+    if y == 0:
+        return "Error! Division by zero."
+    else:
+        return x / y
+
+def modulus(x, y):
+    if y == 0:
+        return "Error! Division by zero."
+    else:
+        return x % y
+
+def exponentiation(x, y):
+    return x ** y
+
+def square_root(x):
+    if x < 0:
+        return "Error! Cannot take square root of a negative number."
+    else:
+        return math.sqrt(x)
+
+# Display menu and perform operations
+def calculator():
+    history = []  # Store the history of calculations
+
+    while True:
+        # Display operation options
+        print("\nSelect operation:")
+        print("1. Add")
+        print("2. Subtract")
+        print("3. Multiply")
+        print("4. Divide")
+        print("5. Modulus")
+        print("6. Exponentiation")
+        print("7. Square Root")
+        print("8. View History")
+        print("9. Exit")
+
+        # Take user input for operation
+        choice = input("Enter choice (1/2/3/4/5/6/7/8/9): ")
+
+        if choice == '9':
+            print("Exiting the calculator. Goodbye!")
+            break
+
+        if choice == '8':
+            print("\nHistory of calculations:")
+            if history:
+                for idx, calc in enumerate(history, 1):
+                    print(f"{idx}. {calc}")
+            else:
+                print("No history available.")
+            continue
+        
+        # Take input for numbers
+        try:
+            if choice == '7':  # Square root only requires one number
+                num1 = float(input("Enter the number: "))
+            else:  # Other operations require two numbers
+                num1 = float(input("Enter first number: "))
+                num2 = float(input("Enter second number: "))
+        except ValueError:
+            print("Invalid input! Please enter numeric values.")
+            continue
+
+        # Perform the selected operation
+        if choice == '1':
+            result = add(num1, num2)
+            history.append(f"{num1} + {num2} = {result}")
+            print(f"The result of addition is: {result}")
+
+        elif choice == '2':
+            result = subtract(num1, num2)
+            history.append(f"{num1} - {num2} = {result}")
+            print(f"The result of subtraction is: {result}")
+
+        elif choice == '3':
+            result = multiply(num1, num2)
+            history.append(f"{num1} * {num2} = {result}")
+            print(f"The result of multiplication is: {result}")
+
+        elif choice == '4':
+            result = divide(num1, num2)
+            history.append(f"{num1} / {num2} = {result}")
+            print(f"The result of division is: {result}")
+
+        elif choice == '5':
+            result = modulus(num1, num2)
+            history.append(f"{num1} % {num2} = {result}")
+            print(f"The result of modulus is: {result}")
+
+        elif choice == '6':
+            result = exponentiation(num1, num2)
+            history.append(f"{num1} ^ {num2} = {result}")
+            print(f"The result of exponentiation is: {result}")
+
+        elif choice == '7':
+            result = square_root(num1)
+            history.append(f"sqrt({num1}) = {result}")
+            print(f"The square root is: {result}")
+
+        else:
+            print("Invalid input! Please choose a valid operation.")
+
+# Call the calculator function to start the program
+calculator()
